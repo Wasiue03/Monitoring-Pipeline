@@ -13,13 +13,12 @@ class APIProducer:
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
 
-        # Prometheus metrics
         self.msg_counter = Counter('api_producer_messages_total', 'Total number of messages produced')
         self.error_counter = Counter('api_producer_errors_total', 'Total number of errors')
         self.api_request_duration = Histogram('api_producer_request_duration_seconds', 'Duration of API requests')
 
     def fetch_and_send(self):
-        with self.api_request_duration.time():  # Measure time for API request
+        with self.api_request_duration.time():  
             try:
                 response = requests.get(self.api_url)
                 response.raise_for_status()
@@ -27,15 +26,15 @@ class APIProducer:
                 for item in data:
                     for topic in self.kafka_topics:
                         self.producer.send(topic, value=item)
-                        self.msg_counter.inc()  # Increment message counter
+                        self.msg_counter.inc()  
                         print(f"Sent to {topic}: {item}")
-                        time.sleep(1)  # Simulate delay
+                        time.sleep(1)  
             except Exception as e:
-                self.error_counter.inc()  # Increment error counter
+                self.error_counter.inc() 
                 print(f"Error: {e}")
 
 if __name__ == "__main__":
-    # Start Prometheus metrics server
+    #
     start_http_server(8000)
 
     api_url = "https://jsonplaceholder.typicode.com/todos"
