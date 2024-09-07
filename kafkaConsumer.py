@@ -3,7 +3,7 @@ import redis
 import json
 from prometheus_client import Counter, start_http_server
 
-# Prometheus metrics
+
 MESSAGE_CONSUMED_COUNT = Counter('kafka_messages_consumed_total', 'Total number of messages consumed from Kafka')
 REDIS_WRITE_COUNT = Counter('redis_write_total', 'Total number of writes to Redis')
 
@@ -23,14 +23,14 @@ class ETLConsumer:
             data['status'] = 'active' if data.get('completed') else 'inactive'
             key = f"task:{data['id']}"
             self.redis_client.set(key, json.dumps(data))
-            MESSAGE_CONSUMED_COUNT.inc()  # Increment Kafka message consumed counter
-            REDIS_WRITE_COUNT.inc()  # Increment Redis write counter
+            MESSAGE_CONSUMED_COUNT.inc() 
+            REDIS_WRITE_COUNT.inc()  
             print(f"Stored: {data}")
 
 if __name__ == "__main__":
     kafka_topics = ["topic1", "topic2", 'topic3']
 
-    # Start Prometheus HTTP server on port 8001
+    
     start_http_server(8001)
 
     consumer = ETLConsumer(kafka_topics)
